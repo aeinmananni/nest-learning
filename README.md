@@ -23,4 +23,12 @@ nestjs-learning/
 مثالا توی این مسیر :  PS D:\my-test-projects\nest-learning\apps>
 
 nest new 01-Modules --package-manager pnpm
+
+------------------------------------------------------------
+برای حذف گیت های پروژه های ایجاد شده با نست جی اس
+Remove-Item -Recurse -Force .\apps\01-modules\.git
+
+برای تست اینکه ببینی ایا حذف شده یا نه
+Test-Path .\apps\01-modules\.git
+
  -->
