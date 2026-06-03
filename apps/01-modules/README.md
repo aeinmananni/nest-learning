@@ -1,98 +1,99 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+<!-- تمام ساختار نست به صورت ماژولار هست ما یک ماژول اپلیکیشن داریم کهبعد تمام فیچر هایی که داریم زیر مجموعه ای از این بخش قرار بگیره
+    
+    با این دستور میتونیم ماژول هارو ایجاد کنیم 
+    nest g module users
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+    به محض ادد کردن این دستور پوشه با نامی که ایجاد شده بوجود می اید
+    معرفی میشود app  ماژول ریشه برنامه یعنی  import نام این ماژول در بخش  
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+   module , controller , service یکی از دستور هایی که بیشتر مورد استفاده قرار یگیره برای نصب 
+   دستور زیر خواهد بود
 
-## Description
+   nest g res users => میتونید هر نامی که میخواید براش انتخاب کنید
+   ------------------------------------------------------------------------------------------------
+   توضیحات : 
+            خب ما الان دو تا پوشه ایجاد کردیم برای کاربر ها و سفارش هاشون
+            اینجا به هر دلیلی اگر من بخوام از سرویس کاربر ها توی پوشه سفارش ها استفاده کنم
+            یک اپشن تعریف کنیم @Module توی دکوریتور  users.module  باید توی بخش 
+            و کلاس سرویس مربوط به کار بر هارو داخلش بزاریم  exports  بنام 
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+          exports : [UsersService]
 
-## Project setup
+         باید ماژول مربوط به کاربر هارو  رو اینپورت کنیم orders.module  و حالا توی پوشه مربوط به سفارشات در فایل 
 
-```bash
-$ pnpm install
-```
+         @Module({
+         ...,
+         ...,
+         imports:[UsersModule]
+         
+         })
 
-## Compile and run the project
+         نست میگه : 
+                    تنها ماژول هایی میتونن از سرویس ماژول های دیگه استفاده کنن که اون ماژول
+                    رو توی خودشون اینپورت کرده باشن 
+    ----------------------------------------------------------------------------------------------
+    خب توی این سناریویی که داریم برای مثال میخوایم هنگام لود شدن این ماژول تنظیماتی رو براش
+    انجام بدیم
+    حالا مثلا مثالی که میخوایم روش کار کنیم برای کاربر هاست
 
-```bash
-# development
-$ pnpm run start
+   کنیم Inject و درواقع حتی سرویسی که مربوط به خوده ماژول کاربرهاست رو میتونیم داخل خودش 
 
-# watch mode
-$ pnpm run start:dev
+   import { Module, OnModuleInit } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
 
-# production mode
-$ pnpm run start:prod
-```
+@Module({
+  controllers: [UsersController],
+  providers: [UsersService],
+  exports: [UsersService],
+})
 
-## Run tests
+export class UsersModule implements OnModuleInit {
+  constructor(private userService: UsersService) {}
 
-```bash
-# unit tests
-$ pnpm run test
+  onModuleInit() {
+    console.log('Users Module init');
+    this.userService.AddUsersWithSeed();
+  }
+}
+    -----------------------------------------------------------------------------------------
+   * به اصطلاح تزریق سرویس ها توی یک ماژول میگن اینجکت
+   OrdersModule رو توی  UsersModule  حالا کاره دیگه ای که میتونیم انجام بدیم تا بدون اینکه 
+   اینپورت کنیم و بتونیم از سرویس های مربوط به کاربران استفاده کنیم این هست که
+  توی ماژول کاربران استفاده کنیم و اون رو در بالای دکوریتور ماژول قرار میدیم @Global  میتونیم از دکوریتور 
+  به این ترتیب دیگه نیازی نیست اینکارو در ماژول سفارشات انجام بدیم
+  @Module({
+         ...,
+         ...,
+         imports:[UsersModule]
+         
+         })
 
-# e2e tests
-$ pnpm run test:e2e
+         پس با ن.جه به توضیحات کد ما به این صورت تغییر میکنه
+         users.module.ts
 
-# test coverage
-$ pnpm run test:cov
-```
+         @Global()
+        @Module({
+                controllers: [UsersController],
+                providers: [UsersService],
+                exports: [UsersService],
+                })
 
-## Deployment
+              orders.module.ts  در پوشه 
+             
+               @Module({
+                        ...,
+                        ...,
+                        imports:[] 
+                        
+                        })
+                بخش اینپورت رو میتونیم خالی بزاریم
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+                نکته : 
+                       * البته خوده نست چنین چیزی رو پیشنهاد نمیکنه و فقط در مواردی مثل تنظیمات دیتابیس میتونیم همچین کاری رو انجام بدیم 
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+        --------------------------------------------------------------------------------------------------------------------------------
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+        Dynamic Module:
+                        ماژول هایی که بسته به جایی که هستند میتونن تغییرات خودشون رو داشته باشن
+-->
