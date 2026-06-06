@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: nest_db_5437
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: nest_learning_db
+      POSTGRES_USER: ayin_user
+      POSTGRES_PASSWORD: 1997M1997m
+
+    ports:
+      - "5437:5432"
+
+    volumes:
+      - postgres_data_5437:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ayin_user -d nest_learning_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis_nest_learning
+    restart: unless-stopped
+    ports:
+      - "7340:6379"
+
+volumes:
+  postgres_data_5437:
