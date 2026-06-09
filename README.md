@@ -31,4 +31,8 @@ Remove-Item -Recurse -Force .\apps\01-modules\.git
 برای تست اینکه ببینی ایا حذف شده یا نه
 Test-Path .\apps\01-modules\.git
 
+-------------------------------------------------------------
+برای بیلد گرفتن پروژه توی روت اصلی
+
+pnpm --filter @workspace/database build
  -->
